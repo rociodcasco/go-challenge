@@ -18,7 +18,7 @@ type Transfer struct {
 	gorm.Model
 	FromUserID uint   `json:"from_user_id"`
 	ToUserID   uint   `json:"to_user_id"`
-	Amount        uint   `json:"amount"`
+	Amount        float64   `json:"amount"`
 	Description   string `json:"description"`
 	TransferDate  time.Time `json:"transfer_date"`
 	Status        Status `json:"status"`

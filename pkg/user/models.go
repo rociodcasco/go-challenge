@@ -9,5 +9,5 @@ type User struct {
 	Name	 string `json:"name"`
 	DNI string `json:"dni"`
 	Email    string `json:"email"`
-
+	Balance  uint   `json:"balance" gorm:"check:balance>=0"`
 }

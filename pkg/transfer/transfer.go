@@ -13,6 +13,8 @@ type Storage interface {
 	UpdateTransfer(transfer *Transfer) error
 	
 	GetUserByID(id uint) (*user.User, error)
+
+	UpdateBalances(fromUserID, toUserID uint, amount float64) error
 }
 
 type TransferManager struct {
@@ -34,15 +36,6 @@ func (m *TransferManager) CreateTransfer(transfer *Transfer) (uint, error) {
 		return 0, fmt.Errorf("amount must be greater than zero")
 	}
 
-	_, err := m.storage.GetUserByID(transfer.FromUserID)
-	if err != nil {
-		return 0, fmt.Errorf("from user not found: %w", err)
-	}
-
-	_, err = m.storage.GetUserByID(transfer.ToUserID)
-	if err != nil {
-		return 0, fmt.Errorf("to user not found: %w", err)
-	}
 	if transfer.FromUserID == transfer.ToUserID {
 		return 0, fmt.Errorf("from user and to user cannot be the same")
 	}
@@ -66,7 +59,13 @@ func (m *TransferManager) FinishTransfer(id uint, status Status) error {
 		return fmt.Errorf("transfer is not pending")
 	}
 
-	// update balances
+	if status == Completed {
+		// update balances
+		err = m.storage.UpdateBalances(transfer.FromUserID, transfer.ToUserID, transfer.Amount)
+		if err != nil {
+			return fmt.Errorf("failed to update balances: %w", err)
+		}
+	}
 
 	transfer.Status = status
 	err = m.storage.UpdateTransfer(transfer)

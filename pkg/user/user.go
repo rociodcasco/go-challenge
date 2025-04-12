@@ -24,6 +24,7 @@ func (m *UserManager) CreateUser(user *User) (uint, error) {
 		return 0, fmt.Errorf("user cannot be nil")
 	}
 	
+	user.Balance = 0.0 // default balance
 	id, err := m.storage.CreateUser(user)
 	if err != nil {	
 		return 0, fmt.Errorf("failed to create user: %w", err)

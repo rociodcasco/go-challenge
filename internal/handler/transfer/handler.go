@@ -9,6 +9,7 @@ import (
 
 type TransferManager interface {
 	CreateTransfer(transfer *transfer.Transfer) (uint, error)
+	FinishTransfer(id uint, status transfer.Status) error
 }
 
 type TransferHandler struct {
@@ -25,8 +26,7 @@ func NewTransferHandler(transferManager TransferManager) (*TransferHandler, erro
 func (h *TransferHandler) CreateTransfer(c *gin.Context) {
 	var transfer transfer.Transfer
 	if err := c.ShouldBindJSON(&transfer); err != nil {
-		errasd := fmt.Errorf("failed to bind JSON: %w", err)
-		c.JSON(400, gin.H{"error": errasd.Error()})
+		c.JSON(400, gin.H{"error": fmt.Errorf("failed to bind JSON: %w", err).Error()})
 		return
 	}
 
@@ -40,5 +40,23 @@ func (h *TransferHandler) CreateTransfer(c *gin.Context) {
 		"message": "transfer created",
 		"transfer_id": id,
 		"status": transfer.Status,
+	})
+}
+
+func (h *TransferHandler) FinishTransfer(c *gin.Context) {
+	var transfer transfer.Transfer
+	if err := c.ShouldBindJSON(&transfer); err != nil {
+		c.JSON(400, gin.H{"error": fmt.Errorf("failed to bind JSON: %w", err).Error()})
+		return
+	}
+
+	err := h.transferManager.FinishTransfer(transfer.ID, transfer.Status)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"message": fmt.Sprintf("transfer %d finished with status %s", transfer.ID, transfer.Status),
 	})
 }

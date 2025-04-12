@@ -12,6 +12,7 @@ type UserHandler interface {
 
 type TransferHandler interface {
 	CreateTransfer(c *gin.Context)
+	FinishTransfer(c *gin.Context)
 }
 
 func SetupRouter(userHandler UserHandler, transferHandler TransferHandler) *gin.Engine {
@@ -28,6 +29,6 @@ func SetupRouter(userHandler UserHandler, transferHandler TransferHandler) *gin.
 
 	transfers := r.Group("/transfers")
 	transfers.POST("/", transferHandler.CreateTransfer)
-
+	transfers.POST("/finish", transferHandler.FinishTransfer)
 	return r
 }
