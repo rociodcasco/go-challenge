@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"go-challenge/pkg/transfer"
 	"go-challenge/pkg/user"
 
 	"gorm.io/driver/postgres"
@@ -18,15 +19,10 @@ func SetupStorage() (*Storage, error) {
 		return nil, err
 	}	
 	// migrations 
-	if err := db.AutoMigrate(&user.User{}); err != nil {
+	if err := db.AutoMigrate(&user.User{}, &transfer.Transfer{}); err != nil {
 		return nil, err
 	}
 	return &Storage{
 		db: db,
 	}, nil
-}
-
-func (s *Storage) CreateUser(user *user.User) error{
-	return s.db.Create(user).Error
-
 }

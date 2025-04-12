@@ -10,7 +10,11 @@ type UserHandler interface {
 	CreateUser(c *gin.Context)
 }
 
-func SetupRouter(userHandler UserHandler) *gin.Engine {
+type TransferHandler interface {
+	CreateTransfer(c *gin.Context)
+}
+
+func SetupRouter(userHandler UserHandler, transferHandler TransferHandler) *gin.Engine {
 	r := gin.Default()
 
 	// Ping test
@@ -21,6 +25,9 @@ func SetupRouter(userHandler UserHandler) *gin.Engine {
 	users := r.Group("/users")
 
 	users.POST("/", userHandler.CreateUser)
+
+	transfers := r.Group("/transfers")
+	transfers.POST("/", transferHandler.CreateTransfer)
 
 	return r
 }

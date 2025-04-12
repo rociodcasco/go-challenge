@@ -8,7 +8,7 @@ import (
 )
 
 type UserManager interface {
-	CreateUser(user *user.User) error
+	CreateUser(user *user.User) (uint,error)
 }
 
 type UserHandler struct {
@@ -23,14 +23,20 @@ func NewUserHanlder(manager UserManager) (*UserHandler, error) {
 }
 
 func (h *UserHandler) CreateUser(c *gin.Context) {
-	err := h.manager.CreateUser(&user.User{
-		ID: 123,
-	})
+	var user user.User
+	if err := c.ShouldBindJSON(&user); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
 
+	id, err := h.manager.CreateUser(&user)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(200, gin.H{"message": "user created"})
+	c.JSON(200, gin.H{
+		"message": "user created",
+		"user_id":     id,
+	})
 }
