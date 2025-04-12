@@ -5,7 +5,7 @@ import (
 )
 
 type Storage interface{
-	CreateUser(user *User) error
+	CreateUser(user *User) (uint,error)
 }
 
 type UserManager struct{
@@ -19,13 +19,14 @@ func NewUserManager(s Storage) (*UserManager, error) {
 	return &UserManager{storage: s}, nil
 }
 
-func (m *UserManager) CreateUser(user *User) error {
+func (m *UserManager) CreateUser(user *User) (uint, error) {
 	if user == nil {
-		return fmt.Errorf("user cannot be nil")
+		return 0, fmt.Errorf("user cannot be nil")
 	}
-	err := m.storage.CreateUser(user)
+	
+	id, err := m.storage.CreateUser(user)
 	if err != nil {	
-		return fmt.Errorf("failed to create user: %w", err)
+		return 0, fmt.Errorf("failed to create user: %w", err)
 	}
-	return nil
+	return id, nil
 }

@@ -15,7 +15,7 @@ services:
     #    tmpfs:
     #      size: 134217728 # 128*2^20 bytes = 128Mb
     environment:
-      POSTGRES_PASSWORD: go-challenge
+      POSTGRES_PASSWORD: go
     ports:
       - 5432:5432  
 
