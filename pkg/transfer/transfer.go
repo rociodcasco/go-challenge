@@ -14,7 +14,7 @@ type Storage interface {
 	
 	GetUserByID(id uint) (*user.User, error)
 
-	UpdateBalances(fromUserID, toUserID uint, amount float64) error
+	UpdateBalances(fromUserID, toUserID uint, amount uint) error
 }
 
 type TransferManager struct {
@@ -74,4 +74,12 @@ func (m *TransferManager) FinishTransfer(id uint, status Status) error {
 	}
 
 	return nil
+}
+
+func (m *TransferManager) GetTransferByID(id uint) (*Transfer, error) {
+	transfer, err := m.storage.GetTransferByID(id)
+	if err != nil {
+		return nil, fmt.Errorf("transfer not found: %w", err)
+	}
+	return transfer, nil
 }

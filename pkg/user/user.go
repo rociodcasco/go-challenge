@@ -6,6 +6,7 @@ import (
 
 type Storage interface{
 	CreateUser(user *User) (uint,error)
+	GetUserByID(id uint) (*User, error)
 }
 
 type UserManager struct{
@@ -30,4 +31,12 @@ func (m *UserManager) CreateUser(user *User) (uint, error) {
 		return 0, fmt.Errorf("failed to create user: %w", err)
 	}
 	return id, nil
+}
+
+func (m *UserManager) GetUserBalance(id uint) (uint, error) {
+	user, err := m.storage.GetUserByID(id)
+	if err != nil {
+		return 0, fmt.Errorf("user not found: %w", err)
+	}
+	return user.Balance, nil
 }

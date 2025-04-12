@@ -3,6 +3,7 @@ package transferHandler
 import (
 	"fmt"
 	"go-challenge/pkg/transfer"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -10,6 +11,7 @@ import (
 type TransferManager interface {
 	CreateTransfer(transfer *transfer.Transfer) (uint, error)
 	FinishTransfer(id uint, status transfer.Status) error
+	GetTransferByID(id uint) (*transfer.Transfer, error)
 }
 
 type TransferHandler struct {
@@ -58,5 +60,29 @@ func (h *TransferHandler) FinishTransfer(c *gin.Context) {
 
 	c.JSON(200, gin.H{
 		"message": fmt.Sprintf("transfer %d finished with status %s", transfer.ID, transfer.Status),
+	})
+}
+
+func (h *TransferHandler) GetTransferByID(c *gin.Context) {
+	id := c.Param("id")
+	if id == "" {
+		c.JSON(400, gin.H{"error": "transfer ID is required"})
+		return
+	}
+
+	transferID, err := strconv.Atoi(id)
+	if err != nil {
+		c.JSON(400, gin.H{"error": fmt.Errorf("invalid transfer ID: %w", err).Error()})
+		return
+	}
+
+	transfer, err := h.transferManager.GetTransferByID(uint(transferID))
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"transfer": transfer,
 	})
 }

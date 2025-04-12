@@ -23,7 +23,7 @@ func (s *Storage) GetUserByID(id uint) (*user.User, error) {
 	return &user, nil
 }
 
-func (s *Storage) UpdateBalances(fromUserID, toUserID uint, amount float64) error {
+func (s *Storage) UpdateBalances(fromUserID, toUserID uint, amount uint) error {
 	// Start a transaction
 	tx := s.db.Begin()
 	if tx.Error != nil {
