@@ -30,3 +30,5 @@ services:
       - DB_USER=postgres
       - DB_PASSWORD=go
       - DB_NAME=postgres
+      - ADMIN_TOKEN=7rXBD1gtRblZtxyFhtEVqb6B1S1SG2dyCcbrKcOyrkSjTwIMgXoKGk0Ci7ek7FDy
+      - WEBHOOK_TOKEN=buQs7IZKA5j05WuC21cgSt9DGQlqCqgrbO6EXfgWa48Lw9qkbFLRKWXKQMQMPLQb

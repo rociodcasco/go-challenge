@@ -35,13 +35,11 @@ func NewUserHandler(manager UserManager, logger *slog.Logger) (*UserHandler, err
 
 func (h *UserHandler) CreateUser(c *gin.Context) {
 	h.logger.InfoContext(c.Request.Context(), "Creating user...")
-	fmt.Println("AAAAAAAA")
 	var user user.User
 	if err := c.ShouldBindJSON(&user); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-	fmt.Println("USER:", user)
 	id, err := h.manager.CreateUser(c.Request.Context(), &user)
 	if err != nil {
 		// Lo correcto seria separar el error en base a su tipo, pero lo dejo así por simplicidad
