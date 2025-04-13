@@ -6,6 +6,7 @@ import (
 	transferHandler "go-challenge/internal/handler/transfer"
 	transfer_mocks "go-challenge/internal/handler/transfer/mocks"
 	userHandler "go-challenge/internal/handler/user"
+	"go-challenge/internal/metrics"
 	"go-challenge/internal/router"
 	"go-challenge/pkg/transfer"
 	"log/slog"
@@ -40,7 +41,7 @@ func (suite *TransferHandlerTestSuite) SetupTest() {
 	suite.NoError(err, "Failed to create transfer handler")
 	suite.transferHandler = handler
 
-	suite.router = router.SetupRouter(&userHandler.UserHandler{}, suite.transferHandler)
+	suite.router = router.SetupRouter(&userHandler.UserHandler{}, suite.transferHandler, &metrics.MetricsManager{})
 }
 
 func (suite *TransferHandlerTestSuite) TearDownTest() {

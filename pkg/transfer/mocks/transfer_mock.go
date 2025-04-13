@@ -81,6 +81,21 @@ func (mr *MockStorageMockRecorder) GetTransferByID(ctx, id interface{}) *gomock.
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTransferByID", reflect.TypeOf((*MockStorage)(nil).GetTransferByID), ctx, id)
 }
 
+// GetTransfersInformation mocks base method.
+func (m *MockStorage) GetTransfersInformation() (map[string]int, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetTransfersInformation")
+	ret0, _ := ret[0].(map[string]int)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetTransfersInformation indicates an expected call of GetTransfersInformation.
+func (mr *MockStorageMockRecorder) GetTransfersInformation() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTransfersInformation", reflect.TypeOf((*MockStorage)(nil).GetTransfersInformation))
+}
+
 // GetUserByID mocks base method.
 func (m *MockStorage) GetUserByID(ctx context.Context, id uint) (*user.User, error) {
 	m.ctrl.T.Helper()

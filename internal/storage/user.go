@@ -46,3 +46,12 @@ func (s *Storage) UpdateBalances(ctx context.Context, fromUserID, toUserID uint,
 	// Commit the transaction
 	return tx.Commit().Error
 }
+
+func (s *Storage) CountUsers() (int, error) {
+	var count int64
+	result := s.db.Model(&user.User{}).Count(&count)
+	if result.Error != nil {
+		return 0, result.Error
+	}
+	return int(count), nil
+}

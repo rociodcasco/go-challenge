@@ -35,6 +35,21 @@ func (m *MockStorage) EXPECT() *MockStorageMockRecorder {
 	return m.recorder
 }
 
+// CountUsers mocks base method.
+func (m *MockStorage) CountUsers() (int, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CountUsers")
+	ret0, _ := ret[0].(int)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CountUsers indicates an expected call of CountUsers.
+func (mr *MockStorageMockRecorder) CountUsers() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CountUsers", reflect.TypeOf((*MockStorage)(nil).CountUsers))
+}
+
 // CreateUser mocks base method.
 func (m *MockStorage) CreateUser(ctx context.Context, user *user.User) (uint, error) {
 	m.ctrl.T.Helper()

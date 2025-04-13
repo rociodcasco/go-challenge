@@ -4,6 +4,7 @@ import (
 	"fmt"
 	transferHandler "go-challenge/internal/handler/transfer"
 	userHandler "go-challenge/internal/handler/user"
+	"go-challenge/internal/metrics"
 	"go-challenge/internal/router"
 	"go-challenge/internal/storage"
 	transferexpirer "go-challenge/internal/transferExpirer"
@@ -46,8 +47,10 @@ func main() {
 	failOnError(err)
 	transferExpirer.Start()
 	
+	metrics, err := metrics.NewMetricsManager(trasferManager, userManager)
+	failOnError(err)
 
-	r := router.SetupRouter(userHandler, transferHandler)
+	r := router.SetupRouter(userHandler, transferHandler, metrics)
 	fmt.Println("Server is running on port 8080...")
 	// Listen and Server in 0.0.0.0:8080
 	r.Run(":8000")

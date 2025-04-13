@@ -5,6 +5,7 @@ import (
 	transferHandler "go-challenge/internal/handler/transfer"
 	userHandler "go-challenge/internal/handler/user"
 	userHandler_mock "go-challenge/internal/handler/user/mocks"
+	"go-challenge/internal/metrics"
 	"go-challenge/internal/router"
 	"go-challenge/pkg/user"
 	"log/slog"
@@ -39,7 +40,7 @@ func (suite *UserHandlerTestSuite) SetupTest() {
 	suite.NoError(err, "Failed to create user handler")
 	suite.handler = handler
 
-	suite.router = router.SetupRouter(suite.handler, &transferHandler.TransferHandler{})
+	suite.router = router.SetupRouter(suite.handler, &transferHandler.TransferHandler{}, &metrics.MetricsManager{})
 }
 
 func (suite *UserHandlerTestSuite) TearDownTest() {

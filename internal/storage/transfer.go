@@ -38,3 +38,27 @@ func (s *Storage) GetAllPendingTransfers(ctx context.Context) ([]transfer.Transf
 	}
 	return transfers, nil
 }
+
+func (s *Storage) GetTransfersInformation() (map[string]int, error) {
+	var pending int64
+	pendingResult := s.db.Model(&transfer.Transfer{}).Where("status = ?", "PENDING").Count(&pending)
+	if pendingResult.Error != nil {
+		return nil, pendingResult.Error
+	}
+	var completed int64
+	completedResult := s.db.Model(&transfer.Transfer{}).Where("status = ?", "COMPLETED").Count(&completed)
+	if completedResult.Error != nil {
+		return nil, completedResult.Error
+	}
+	var failed int64
+	failedResult := s.db.Model(&transfer.Transfer{}).Where("status = ?", "FAILED").Count(&failed)
+	if failedResult.Error != nil {
+		return nil, failedResult.Error
+	}
+	return map[string]int{
+		"total":     int(pending + completed + failed),
+		"pending":   int(pending),
+		"completed": int(completed),
+		"failed":    int(failed),
+	}, nil
+}

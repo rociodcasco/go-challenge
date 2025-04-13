@@ -14,6 +14,8 @@ type Storage interface {
 	UpdateTransfer(ctx context.Context, transfer *Transfer) error
 	GetAllPendingTransfers(ctx context.Context) ([]Transfer, error)
 
+	GetTransfersInformation()(map[string]int, error)
+
 	GetUserByID(ctx context.Context, id uint) (*user.User, error)
 
 	UpdateBalances(ctx context.Context, fromUserID, toUserID uint, amount uint) error
@@ -109,4 +111,8 @@ func (m *TransferManager) GetAllPendingTransfers(ctx context.Context) ([]Transfe
 		return nil, fmt.Errorf("failed to get pending transfers: %w", err)
 	}
 	return transfers, nil
+}
+
+func (m *TransferManager) GetTransfersInformation() (map[string]int, error) {
+	return m.storage.GetTransfersInformation()
 }

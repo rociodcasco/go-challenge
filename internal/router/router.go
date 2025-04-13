@@ -17,7 +17,11 @@ type TransferHandler interface {
 	GetTransferByID(c *gin.Context)
 }
 
-func SetupRouter(userHandler UserHandler, transferHandler TransferHandler) *gin.Engine {
+type MetricsManager interface {
+	GetMetrics(c *gin.Context)
+}
+
+func SetupRouter(userHandler UserHandler, transferHandler TransferHandler, metrics MetricsManager) *gin.Engine {
 	r := gin.Default()
 
 	auth := gin.BasicAuth(gin.Accounts{
@@ -30,6 +34,8 @@ func SetupRouter(userHandler UserHandler, transferHandler TransferHandler) *gin.
 		c.String(http.StatusOK, "pong")
 	})
 
+	r.GET("/metrics", metrics.GetMetrics)
+
 	users := r.Group("/users")
 	users.POST("/", userHandler.CreateUser)
 	users.GET("/:id/balance",auth, userHandler.GetUserBalance)
@@ -40,15 +46,4 @@ func SetupRouter(userHandler UserHandler, transferHandler TransferHandler) *gin.
 	transfers.GET("/:id", transferHandler.GetTransferByID)
 
 	return r
-}
-
-// AuthMiddleware is an example middleware for Basic Authentication
-func AuthMiddleware(c *gin.Context) {
-	// Retrieve the token from the Authorization header
-	token := c.GetHeader("Authorization")
-	if token != "secret_token" {
-	 c.JSON(401, gin.H{"message": "Unauthorized"})
-	 c.Abort()
-	 return
-	}
 }
