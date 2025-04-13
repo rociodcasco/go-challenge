@@ -28,3 +28,12 @@ func (s *Storage) UpdateTransfer(transfer *transfer.Transfer) error {
 	}
 	return nil
 }
+
+func (s *Storage) GetAllPendingTransfers() ([]transfer.Transfer, error) {
+	var transfers []transfer.Transfer
+	result := s.db.Where("status = ?", transfer.Pending).Find(&transfers)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return transfers, nil
+}

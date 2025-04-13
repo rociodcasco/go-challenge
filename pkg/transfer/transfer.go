@@ -11,7 +11,8 @@ type Storage interface {
 	CreateTransfer(transfer *Transfer) (uint, error)
 	GetTransferByID(id uint) (*Transfer, error)
 	UpdateTransfer(transfer *Transfer) error
-	
+	GetAllPendingTransfers() ([]Transfer, error)
+
 	GetUserByID(id uint) (*user.User, error)
 
 	UpdateBalances(fromUserID, toUserID uint, amount uint) error
@@ -81,4 +82,30 @@ func (m *TransferManager) GetTransferByID(id uint) (*Transfer, error) {
 		return nil, fmt.Errorf("transfer not found: %w", err)
 	}
 	return transfer, nil
+}
+
+func (m *TransferManager) ExpireTransfer(id uint) error {
+	transfer, err := m.storage.GetTransferByID(id)
+	if err != nil {
+		return fmt.Errorf("transfer not found: %w", err)
+	}
+	if transfer.Status != Pending {
+		return fmt.Errorf("transfer is not pending")
+	}
+
+	transfer.Status = Failed
+	err = m.storage.UpdateTransfer(transfer)
+	if err != nil {
+		return fmt.Errorf("failed to update transfer: %w", err)
+	}
+
+	return nil
+}
+
+func (m *TransferManager) GetAllPendingTransfers() ([]Transfer, error) {
+	transfers, err := m.storage.GetAllPendingTransfers()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get pending transfers: %w", err)
+	}
+	return transfers, nil
 }

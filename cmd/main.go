@@ -6,15 +6,17 @@ import (
 	userHandler "go-challenge/internal/handler/user"
 	"go-challenge/internal/router"
 	"go-challenge/internal/storage"
+	transferexpirer "go-challenge/internal/transferExpirer"
 	"go-challenge/pkg/transfer"
 	"go-challenge/pkg/user"
+	"os"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 func main() {
-	dsn := "host=db user=postgres password=go-challenge dbname=postgres port=5432 sslmode=disable"
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable", os.Getenv("DB_HOST"), os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_NAME"), os.Getenv("DB_PORT"))
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	failOnError(err)
 
@@ -29,12 +31,17 @@ func main() {
 	userHandler, err := userHandler.NewUserHandler(userManager)
 	failOnError(err)
 
-
-	trasferManager, err := transfer.NewTransferManager(db)
+	trasferManager, err := transfer.NewTransferManager(storage)
 	failOnError(err)
 
 	transferHandler, err := transferHandler.NewTransferHandler(trasferManager)
 	failOnError(err)
+
+	// Initialize the transfer expirer
+	transferExpirer, err := transferexpirer.NewTransferExpirer(trasferManager)
+	failOnError(err)
+	transferExpirer.Start()
+	
 
 	r := router.SetupRouter(userHandler, transferHandler)
 	fmt.Println("Server is running on port 8080...")
