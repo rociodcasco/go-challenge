@@ -19,7 +19,7 @@ func main() {
 	failOnError(err)
 
 
-	userHandler, err := userHandler.NewUserHanlder(userManager)
+	userHandler, err := userHandler.NewUserHandler(userManager)
 	failOnError(err)
 
 
