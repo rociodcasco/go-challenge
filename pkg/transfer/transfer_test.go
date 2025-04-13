@@ -3,13 +3,14 @@ package transfer_test
 import (
 	"context"
 	"fmt"
-	"go-challenge/pkg/transfer"
-	transfer_mocks "go-challenge/pkg/transfer/mocks"
 	"testing"
 	"time"
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/suite"
+
+	"go-challenge/pkg/transfer"
+	transfer_mocks "go-challenge/pkg/transfer/mocks"
 )
 
 //go:generate mockgen -package transfer_mocks -source=transfer.go -destination=./mocks/transfer_mock.go

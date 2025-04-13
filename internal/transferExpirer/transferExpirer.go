@@ -3,9 +3,10 @@ package transferexpirer
 import (
 	"context"
 	"fmt"
-	"go-challenge/pkg/transfer"
 	"log/slog"
 	"time"
+
+	"go-challenge/pkg/transfer"
 )
 
 type TransferManager interface {

@@ -2,12 +2,6 @@ package userHandler_test
 
 import (
 	"encoding/json"
-	transferHandler "go-challenge/internal/handler/transfer"
-	userHandler "go-challenge/internal/handler/user"
-	userHandler_mock "go-challenge/internal/handler/user/mocks"
-	"go-challenge/internal/metrics"
-	"go-challenge/internal/router"
-	"go-challenge/pkg/user"
 	"log/slog"
 	"net/http"
 	"net/http/httptest"
@@ -15,9 +9,15 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
-
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/suite"
+
+	transferHandler "go-challenge/internal/handler/transfer"
+	userHandler "go-challenge/internal/handler/user"
+	userHandler_mock "go-challenge/internal/handler/user/mocks"
+	"go-challenge/internal/metrics"
+	"go-challenge/internal/router"
+	"go-challenge/pkg/user"
 )
 
 //go:generate mockgen -package userHandler_mock -source=handler.go -destination=./mocks/userHandler_mock.go

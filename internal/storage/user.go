@@ -2,9 +2,10 @@ package storage
 
 import (
 	"context"
-	"go-challenge/pkg/user"
 
 	"gorm.io/gorm"
+
+	"go-challenge/pkg/user"
 )
 
 func (s *Storage) CreateUser(ctx context.Context, user *user.User) (uint, error) {

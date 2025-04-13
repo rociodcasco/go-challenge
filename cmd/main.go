@@ -2,6 +2,12 @@ package main
 
 import (
 	"fmt"
+	"log/slog"
+	"os"
+
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+
 	transferHandler "go-challenge/internal/handler/transfer"
 	userHandler "go-challenge/internal/handler/user"
 	"go-challenge/internal/metrics"
@@ -10,12 +16,6 @@ import (
 	transferexpirer "go-challenge/internal/transferExpirer"
 	"go-challenge/pkg/transfer"
 	"go-challenge/pkg/user"
-	"os"
-
-	"log/slog"
-
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 )
 
 func main() {

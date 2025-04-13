@@ -3,13 +3,13 @@ package user_test
 import (
 	"context"
 	"fmt"
-	"go-challenge/pkg/user"
 	"testing"
-
-	user_mocks "go-challenge/pkg/user/mocks"
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/suite"
+
+	"go-challenge/pkg/user"
+	user_mocks "go-challenge/pkg/user/mocks"
 )
 
 //go:generate mockgen -package user_mocks -source=user.go -destination=./mocks/user_mock.go

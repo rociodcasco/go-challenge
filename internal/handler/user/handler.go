@@ -3,11 +3,12 @@ package userHandler
 import (
 	"context"
 	"fmt"
-	"go-challenge/pkg/user"
 	"log/slog"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+
+	"go-challenge/pkg/user"
 )
 
 type UserManager interface {

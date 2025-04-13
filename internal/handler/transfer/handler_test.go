@@ -3,12 +3,6 @@ package transferHandler_test
 import (
 	"encoding/json"
 	"fmt"
-	transferHandler "go-challenge/internal/handler/transfer"
-	transfer_mocks "go-challenge/internal/handler/transfer/mocks"
-	userHandler "go-challenge/internal/handler/user"
-	"go-challenge/internal/metrics"
-	"go-challenge/internal/router"
-	"go-challenge/pkg/transfer"
 	"log/slog"
 	"net/http"
 	"net/http/httptest"
@@ -16,9 +10,15 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
-
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/suite"
+
+	transferHandler "go-challenge/internal/handler/transfer"
+	transfer_mocks "go-challenge/internal/handler/transfer/mocks"
+	userHandler "go-challenge/internal/handler/user"
+	"go-challenge/internal/metrics"
+	"go-challenge/internal/router"
+	"go-challenge/pkg/transfer"
 )
 
 //go:generate mockgen -package transferHandler_mock -source=handler.go -destination=./mocks/transferHandler_mock.go

@@ -3,11 +3,12 @@ package transferHandler
 import (
 	"context"
 	"fmt"
-	"go-challenge/pkg/transfer"
 	"log/slog"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+
+	"go-challenge/pkg/transfer"
 )
 
 type TransferManager interface {
