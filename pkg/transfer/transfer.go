@@ -60,7 +60,6 @@ func (m *TransferManager) FinishTransfer(id uint, status Status) error {
 	}
 
 	if status == Completed {
-		// update balances
 		err = m.storage.UpdateBalances(transfer.FromUserID, transfer.ToUserID, transfer.Amount)
 		if err != nil {
 			return fmt.Errorf("failed to update balances: %w", err)

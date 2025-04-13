@@ -8,14 +8,21 @@ import (
 	"go-challenge/internal/storage"
 	"go-challenge/pkg/transfer"
 	"go-challenge/pkg/user"
+
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 func main() {
-	db, err := storage.SetupStorage()
+	dsn := "host=db user=postgres password=go-challenge dbname=postgres port=5432 sslmode=disable"
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	failOnError(err)
+
+	storage, err := storage.SetupStorage(db)
 	failOnError(err)
 
 	
-	userManager, err := user.NewUserManager(db)
+	userManager, err := user.NewUserManager(storage)
 	failOnError(err)
 
 
