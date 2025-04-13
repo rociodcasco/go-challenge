@@ -29,6 +29,10 @@ func SetupRouter(userHandler UserHandler, transferHandler TransferHandler, metri
 		"pepe":  "123",
 	})
 
+	transfer := gin.BasicAuth(gin.Accounts{
+		"rocio": "casco",
+	})
+
 	// Ping test
 	r.GET("/ping", func(c *gin.Context) {
 		c.String(http.StatusOK, "pong")
@@ -42,8 +46,8 @@ func SetupRouter(userHandler UserHandler, transferHandler TransferHandler, metri
 
 	transfers := r.Group("/transfers")
 	transfers.POST("/", auth, transferHandler.CreateTransfer)
-	transfers.POST("/finish", auth, transferHandler.FinishTransfer)
-	transfers.GET("/:id", transferHandler.GetTransferByID)
+	transfers.POST("/finish", transfer, transferHandler.FinishTransfer)
+	transfers.GET("/:id", auth, transferHandler.GetTransferByID)
 
 	return r
 }
