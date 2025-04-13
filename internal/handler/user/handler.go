@@ -17,7 +17,7 @@ type UserHandler struct {
 	manager UserManager
 }
 
-func NewUserHanlder(manager UserManager) (*UserHandler, error) {
+func NewUserHandler(manager UserManager) (*UserHandler, error) {
 	if manager == nil {
 		return nil, fmt.Errorf("user manager cannot be nil")
 	}
@@ -30,7 +30,7 @@ func (h *UserHandler) CreateUser(c *gin.Context) {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-
+	fmt.Println("USER:", user)
 	id, err := h.manager.CreateUser(&user)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})

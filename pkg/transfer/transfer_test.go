@@ -29,6 +29,10 @@ func (suite *TransferTestSuite) SetupTest() {
 	suite.manager = manager
 }
 
+func (suite *TransferTestSuite) TearDownTest() {
+	suite.ctrl.Finish()
+}
+
 func TestTransferTestSuite(t *testing.T) {
     suite.Run(t, new(TransferTestSuite))
 }

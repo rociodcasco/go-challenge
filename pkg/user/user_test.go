@@ -30,6 +30,10 @@ func (suite *UserTestSuite) SetupTest() {
 	suite.userManager = manager
 }
 
+func (suite *UserTestSuite) TearDownTest() {
+	suite.ctrl.Finish()
+}
+
 func TestUserTestSuite(t *testing.T) {	
 	suite.Run(t, new(UserTestSuite))
 }

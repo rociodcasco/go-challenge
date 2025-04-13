@@ -41,7 +41,6 @@ func (h *TransferHandler) CreateTransfer(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"message": "transfer created",
 		"transfer_id": id,
-		"status": transfer.Status,
 	})
 }
 
@@ -65,17 +64,13 @@ func (h *TransferHandler) FinishTransfer(c *gin.Context) {
 
 func (h *TransferHandler) GetTransferByID(c *gin.Context) {
 	id := c.Param("id")
-	if id == "" {
-		c.JSON(400, gin.H{"error": "transfer ID is required"})
-		return
-	}
-
 	transferID, err := strconv.Atoi(id)
+	fmt.Println("transferID", transferID)
 	if err != nil {
 		c.JSON(400, gin.H{"error": fmt.Errorf("invalid transfer ID: %w", err).Error()})
 		return
 	}
-
+	fmt.Println("transferID", uint(transferID))
 	transfer, err := h.transferManager.GetTransferByID(uint(transferID))
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
