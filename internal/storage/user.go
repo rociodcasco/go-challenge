@@ -1,31 +1,32 @@
 package storage
 
 import (
+	"context"
 	"go-challenge/pkg/user"
 
 	"gorm.io/gorm"
 )
 
-func (s *Storage) CreateUser(user *user.User) (uint, error) {
-	result := s.db.Create(user)
+func (s *Storage) CreateUser(ctx context.Context, user *user.User) (uint, error) {
+	result := s.db.WithContext(ctx).Create(user)
 	if result.Error != nil {
 		return 0, result.Error
 	}
 	return user.ID, nil
 }
 
-func (s *Storage) GetUserByID(id uint) (*user.User, error) {
+func (s *Storage) GetUserByID(ctx context.Context, id uint) (*user.User, error) {
 	var user user.User
-	result := s.db.First(&user, id)
+	result := s.db.WithContext(ctx).First(&user, id)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 	return &user, nil
 }
 
-func (s *Storage) UpdateBalances(fromUserID, toUserID uint, amount uint) error {
+func (s *Storage) UpdateBalances(ctx context.Context, fromUserID, toUserID uint, amount uint) error {
 	// Start a transaction
-	tx := s.db.Begin()
+	tx := s.db.WithContext(ctx).Begin()
 	if tx.Error != nil {
 		return tx.Error
 	}

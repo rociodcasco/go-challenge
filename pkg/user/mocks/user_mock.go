@@ -5,6 +5,7 @@
 package user_mocks
 
 import (
+	context "context"
 	user "go-challenge/pkg/user"
 	reflect "reflect"
 
@@ -35,31 +36,31 @@ func (m *MockStorage) EXPECT() *MockStorageMockRecorder {
 }
 
 // CreateUser mocks base method.
-func (m *MockStorage) CreateUser(user *user.User) (uint, error) {
+func (m *MockStorage) CreateUser(ctx context.Context, user *user.User) (uint, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateUser", user)
+	ret := m.ctrl.Call(m, "CreateUser", ctx, user)
 	ret0, _ := ret[0].(uint)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // CreateUser indicates an expected call of CreateUser.
-func (mr *MockStorageMockRecorder) CreateUser(user interface{}) *gomock.Call {
+func (mr *MockStorageMockRecorder) CreateUser(ctx, user interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateUser", reflect.TypeOf((*MockStorage)(nil).CreateUser), user)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateUser", reflect.TypeOf((*MockStorage)(nil).CreateUser), ctx, user)
 }
 
 // GetUserByID mocks base method.
-func (m *MockStorage) GetUserByID(id uint) (*user.User, error) {
+func (m *MockStorage) GetUserByID(ctx context.Context, id uint) (*user.User, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetUserByID", id)
+	ret := m.ctrl.Call(m, "GetUserByID", ctx, id)
 	ret0, _ := ret[0].(*user.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetUserByID indicates an expected call of GetUserByID.
-func (mr *MockStorageMockRecorder) GetUserByID(id interface{}) *gomock.Call {
+func (mr *MockStorageMockRecorder) GetUserByID(ctx, id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByID", reflect.TypeOf((*MockStorage)(nil).GetUserByID), id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByID", reflect.TypeOf((*MockStorage)(nil).GetUserByID), ctx, id)
 }

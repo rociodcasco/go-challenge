@@ -1,6 +1,7 @@
 package transfer_test
 
 import (
+	"context"
 	"fmt"
 	"go-challenge/pkg/transfer"
 	transfer_mocks "go-challenge/pkg/transfer/mocks"
@@ -51,22 +52,23 @@ func (suite *TransferTestSuite) TestNewManager() {
 }
 
 func (suite *TransferTestSuite) TestCreateTransfer() {
+	ctx := context.Background()
 	suite.Run("nil transfer", func() {
-		id, err := suite.manager.CreateTransfer(nil)
+		id, err := suite.manager.CreateTransfer(ctx, nil)
 		suite.Equal(uint(0), id, "Expected id to be 0")
 		suite.Error(err, "Expected error when transfer is nil")
 	})
 
 	suite.Run("zero amount", func() {
 		transfer := &transfer.Transfer{Amount: 0}
-		id, err := suite.manager.CreateTransfer(transfer)
+		id, err := suite.manager.CreateTransfer(ctx, transfer)
 		suite.Equal(uint(0), id, "Expected id to be 0")
 		suite.Error(err, "Expected error when amount is zero")
 	})
 
 	suite.Run("same from and to user", func() {
 		transfer := &transfer.Transfer{FromUserID: 1, ToUserID: 1}
-		id, err := suite.manager.CreateTransfer(transfer)
+		id, err := suite.manager.CreateTransfer(ctx, transfer)
 		suite.Equal(uint(0), id, "Expected id to be 0")
 		suite.Error(err, "Expected error when from and to user are the same")
 	})
@@ -79,8 +81,8 @@ func (suite *TransferTestSuite) TestCreateTransfer() {
 			Description: "Test transfer",
 		}
 		errExpected := fmt.Errorf("storage error")
-		suite.storageMock.EXPECT().CreateTransfer(transfer).Return(uint(0), errExpected)
-		id, err := suite.manager.CreateTransfer(transfer)
+		suite.storageMock.EXPECT().CreateTransfer(ctx, transfer).Return(uint(0), errExpected)
+		id, err := suite.manager.CreateTransfer(ctx, transfer)
 		suite.Equal(uint(0), id, "Expected id to be 0")
 		suite.Error(err, "Expected error when storage returns an error")
 		suite.Equal(err.Error(), fmt.Errorf("failed to create transfer: %w", errExpected).Error(), "Expected error to match")
@@ -97,19 +99,20 @@ func (suite *TransferTestSuite) TestCreateTransfer() {
 			Description: "Test transfer",
 		}
 		
-		suite.storageMock.EXPECT().CreateTransfer(expectedTransfer).Return(expectedID, nil)
+		suite.storageMock.EXPECT().CreateTransfer(ctx, expectedTransfer).Return(expectedID, nil)
 
-		id, err := suite.manager.CreateTransfer(expectedTransfer)
+		id, err := suite.manager.CreateTransfer(ctx, expectedTransfer)
 		suite.NoError(err, "Expected no error when creating valid transfer")
 		suite.Equal(expectedID, id, "Expected id to match")
 	})
 }
 
 func (suite *TransferTestSuite) TestFinishTransfer() {
+	ctx := context.Background()
 	suite.Run("transfer not found", func() {
 		id := uint(1)
-		suite.storageMock.EXPECT().GetTransferByID(id).Return(nil, fmt.Errorf("not found"))
-		err := suite.manager.FinishTransfer(id, transfer.Completed)
+		suite.storageMock.EXPECT().GetTransferByID(ctx, id).Return(nil, fmt.Errorf("not found"))
+		err := suite.manager.FinishTransfer(ctx, id, transfer.Completed)
 		suite.Error(err, "Expected error when transfer is not found")
 		suite.Equal(err.Error(), fmt.Errorf("transfer not found: %w", fmt.Errorf("not found")).Error(), "Expected error to match")
 	})
@@ -117,8 +120,8 @@ func (suite *TransferTestSuite) TestFinishTransfer() {
 	suite.Run("transfer not pending", func() {
 		id := uint(1)
 		existingTransfer := &transfer.Transfer{Status: transfer.Completed}
-		suite.storageMock.EXPECT().GetTransferByID(id).Return(existingTransfer, nil)
-		err := suite.manager.FinishTransfer(id, transfer.Completed)
+		suite.storageMock.EXPECT().GetTransferByID(ctx, id).Return(existingTransfer, nil)
+		err := suite.manager.FinishTransfer(ctx, id, transfer.Completed)
 		suite.Error(err, "Expected error when transfer is not pending")
 		suite.Equal(err.Error(), fmt.Errorf("transfer is not pending").Error(), "Expected error to match")
 	})
@@ -126,10 +129,10 @@ func (suite *TransferTestSuite) TestFinishTransfer() {
 	suite.Run("storage update error", func() {
 		id := uint(1)
 		existingTransfer := &transfer.Transfer{Status: transfer.Pending}
-		suite.storageMock.EXPECT().GetTransferByID(id).Return(existingTransfer, nil)
+		suite.storageMock.EXPECT().GetTransferByID(ctx, id).Return(existingTransfer, nil)
 		errExpected := fmt.Errorf("storage update error")
-		suite.storageMock.EXPECT().UpdateBalances(existingTransfer.FromUserID, existingTransfer.ToUserID, existingTransfer.Amount).Return(errExpected)
-		err := suite.manager.FinishTransfer(id, transfer.Completed)
+		suite.storageMock.EXPECT().UpdateBalances(ctx, existingTransfer.FromUserID, existingTransfer.ToUserID, existingTransfer.Amount).Return(errExpected)
+		err := suite.manager.FinishTransfer(ctx, id, transfer.Completed)
 		suite.Error(err, "Expected error when storage update fails")
 		suite.Equal(err.Error(), fmt.Errorf("failed to update balances: %w", errExpected).Error(), "Expected error to match")
 	})
@@ -146,18 +149,18 @@ func (suite *TransferTestSuite) TestFinishTransfer() {
 			Status: transfer.Pending,
 		}
 		
-		suite.storageMock.EXPECT().GetTransferByID(id).Return(existingTransfer, nil)
+		suite.storageMock.EXPECT().GetTransferByID(ctx, id).Return(existingTransfer, nil)
 
-		suite.storageMock.EXPECT().UpdateBalances(expectedFromUserID, expectedToUserID, existingTransfer.Amount).Return(nil)
+		suite.storageMock.EXPECT().UpdateBalances(ctx, expectedFromUserID, expectedToUserID, existingTransfer.Amount).Return(nil)
 
-		suite.storageMock.EXPECT().UpdateTransfer(existingTransfer).DoAndReturn(
-			func(t *transfer.Transfer) error {
+		suite.storageMock.EXPECT().UpdateTransfer(ctx, existingTransfer).DoAndReturn(
+			func(ctx context.Context, t *transfer.Transfer) error {
 				existingTransfer.Status = transfer.Completed
 				suite.Require().Equal(t, existingTransfer, "Expected transfer to be updated")
 				return nil
 			},
 		)
-		err := suite.manager.FinishTransfer(id, transfer.Completed)
+		err := suite.manager.FinishTransfer(ctx, id, transfer.Completed)
 		suite.NoError(err, "Expected no error when finishing transfer")
 		suite.Equal(transfer.Completed, existingTransfer.Status, "Expected transfer status to be updated")
 	})
@@ -174,26 +177,27 @@ func (suite *TransferTestSuite) TestFinishTransfer() {
 			Status: transfer.Pending,
 		}
 		
-		suite.storageMock.EXPECT().GetTransferByID(id).Return(existingTransfer, nil)
+		suite.storageMock.EXPECT().GetTransferByID(ctx, id).Return(existingTransfer, nil)
 
-		suite.storageMock.EXPECT().UpdateTransfer(existingTransfer).DoAndReturn(
-			func(t *transfer.Transfer) error {
+		suite.storageMock.EXPECT().UpdateTransfer(ctx, existingTransfer).DoAndReturn(
+			func(ctx context.Context, t *transfer.Transfer) error {
 				existingTransfer.Status = transfer.Failed
 				suite.Require().Equal(t, existingTransfer, "Expected transfer to be updated")
 				return nil
 			},
 		)
-		err := suite.manager.FinishTransfer(id, transfer.Failed)
+		err := suite.manager.FinishTransfer(ctx, id, transfer.Failed)
 		suite.NoError(err, "Expected no error when finishing transfer")
 		suite.Equal(transfer.Failed, existingTransfer.Status, "Expected transfer status to be updated")
 	})
 }
 
 func (suite *TransferTestSuite) TestGetTransferByID() {
+	ctx := context.Background()
 	suite.Run("transfer not found", func() {
 		id := uint(1)
-		suite.storageMock.EXPECT().GetTransferByID(id).Return(nil, fmt.Errorf("not found"))
-		transfer, err := suite.manager.GetTransferByID(id)
+		suite.storageMock.EXPECT().GetTransferByID(ctx, id).Return(nil, fmt.Errorf("not found"))
+		transfer, err := suite.manager.GetTransferByID(ctx, id)
 		suite.Nil(transfer, "Expected transfer to be nil")
 		suite.Error(err, "Expected error when transfer is not found")
 		suite.Equal(err.Error(), fmt.Errorf("transfer not found: %w", fmt.Errorf("not found")).Error(), "Expected error to match")
@@ -206,8 +210,8 @@ func (suite *TransferTestSuite) TestGetTransferByID() {
 			ToUserID: 2,
 			Amount: 100,
 		}
-		suite.storageMock.EXPECT().GetTransferByID(id).Return(expectedTransfer, nil)
-		transfer, err := suite.manager.GetTransferByID(id)
+		suite.storageMock.EXPECT().GetTransferByID(ctx, id).Return(expectedTransfer, nil)
+		transfer, err := suite.manager.GetTransferByID(ctx, id)
 		suite.NoError(err, "Expected no error when getting valid transfer")
 		suite.Equal(expectedTransfer, transfer, "Expected transfer to match")
 	})

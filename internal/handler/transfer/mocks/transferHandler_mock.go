@@ -5,6 +5,7 @@
 package transferHandler_mock
 
 import (
+	context "context"
 	transfer "go-challenge/pkg/transfer"
 	reflect "reflect"
 
@@ -35,45 +36,45 @@ func (m *MockTransferManager) EXPECT() *MockTransferManagerMockRecorder {
 }
 
 // CreateTransfer mocks base method.
-func (m *MockTransferManager) CreateTransfer(transfer *transfer.Transfer) (uint, error) {
+func (m *MockTransferManager) CreateTransfer(ctx context.Context, transfer *transfer.Transfer) (uint, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateTransfer", transfer)
+	ret := m.ctrl.Call(m, "CreateTransfer", ctx, transfer)
 	ret0, _ := ret[0].(uint)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // CreateTransfer indicates an expected call of CreateTransfer.
-func (mr *MockTransferManagerMockRecorder) CreateTransfer(transfer interface{}) *gomock.Call {
+func (mr *MockTransferManagerMockRecorder) CreateTransfer(ctx, transfer interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateTransfer", reflect.TypeOf((*MockTransferManager)(nil).CreateTransfer), transfer)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateTransfer", reflect.TypeOf((*MockTransferManager)(nil).CreateTransfer), ctx, transfer)
 }
 
 // FinishTransfer mocks base method.
-func (m *MockTransferManager) FinishTransfer(id uint, status transfer.Status) error {
+func (m *MockTransferManager) FinishTransfer(ctx context.Context, id uint, status transfer.Status) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FinishTransfer", id, status)
+	ret := m.ctrl.Call(m, "FinishTransfer", ctx, id, status)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // FinishTransfer indicates an expected call of FinishTransfer.
-func (mr *MockTransferManagerMockRecorder) FinishTransfer(id, status interface{}) *gomock.Call {
+func (mr *MockTransferManagerMockRecorder) FinishTransfer(ctx, id, status interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FinishTransfer", reflect.TypeOf((*MockTransferManager)(nil).FinishTransfer), id, status)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FinishTransfer", reflect.TypeOf((*MockTransferManager)(nil).FinishTransfer), ctx, id, status)
 }
 
 // GetTransferByID mocks base method.
-func (m *MockTransferManager) GetTransferByID(id uint) (*transfer.Transfer, error) {
+func (m *MockTransferManager) GetTransferByID(ctx context.Context, id uint) (*transfer.Transfer, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetTransferByID", id)
+	ret := m.ctrl.Call(m, "GetTransferByID", ctx, id)
 	ret0, _ := ret[0].(*transfer.Transfer)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetTransferByID indicates an expected call of GetTransferByID.
-func (mr *MockTransferManagerMockRecorder) GetTransferByID(id interface{}) *gomock.Call {
+func (mr *MockTransferManagerMockRecorder) GetTransferByID(ctx, id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTransferByID", reflect.TypeOf((*MockTransferManager)(nil).GetTransferByID), id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTransferByID", reflect.TypeOf((*MockTransferManager)(nil).GetTransferByID), ctx, id)
 }

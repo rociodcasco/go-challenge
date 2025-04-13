@@ -7,6 +7,7 @@ import (
 	userHandler_mock "go-challenge/internal/handler/user/mocks"
 	"go-challenge/internal/router"
 	"go-challenge/pkg/user"
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -26,14 +27,15 @@ type UserHandlerTestSuite struct {
 	ctrl *gomock.Controller
 	managerMock *userHandler_mock.MockUserManager
 	handler *userHandler.UserHandler
+	logger *slog.Logger
 	router *gin.Engine
 }
 
 func (suite *UserHandlerTestSuite) SetupTest() {
 	suite.ctrl = gomock.NewController(suite.T())
 	suite.managerMock = userHandler_mock.NewMockUserManager(suite.ctrl)
-
-	handler, err := userHandler.NewUserHandler(suite.managerMock)
+	suite.logger = slog.Default()
+	handler, err := userHandler.NewUserHandler(suite.managerMock, suite.logger)
 	suite.NoError(err, "Failed to create user handler")
 	suite.handler = handler
 
@@ -50,13 +52,19 @@ func TestUserHandlerTestSuite(t *testing.T) {
 
 func (suite *UserHandlerTestSuite) TestNewUserHandler() {
 	suite.Run("nil user manager", func() {
-		handler, err := userHandler.NewUserHandler(nil)
+		handler, err := userHandler.NewUserHandler(nil, suite.logger)
 		suite.Nil(handler, "Expected nil handler")
 		suite.Error(err, "Expected error when user manager is nil")
 	})
 
+	suite.Run("nil logger", func() {
+		handler, err := userHandler.NewUserHandler(suite.managerMock, nil)
+		suite.Nil(handler, "Expected nil handler")
+		suite.Error(err, "Expected error when logger is nil")
+	})
+
 	suite.Run("valid user manager", func() {
-		handler, err := userHandler.NewUserHandler(suite.managerMock)
+		handler, err := userHandler.NewUserHandler(suite.managerMock, suite.logger)
 		suite.NotNil(handler, "Expected non-nil handler")
 		suite.NoError(err, "Expected no error when user manager is valid")
 	})
@@ -70,14 +78,13 @@ func (suite *UserHandlerTestSuite) TestCreateUser() {
 		suite.Equal(400, w.Code)
 		suite.Contains(w.Body.String(), `{"error":"invalid request"}`)
 	})
-	
 	suite.Run("valid user", func() {
 		user := &user.User{
 			Name: "John Doe",
 			DNI: "12345678",
 			Email: "jdoe@gmail.com",
 		}
-		suite.managerMock.EXPECT().CreateUser(user).Return(uint(1), nil).Times(1)
+		suite.managerMock.EXPECT().CreateUser(gomock.Any(), user).Return(uint(1), nil).Times(1)
 
 		userJson, _ := json.Marshal(user)
 		w := httptest.NewRecorder()
@@ -100,7 +107,7 @@ func (suite *UserHandlerTestSuite) TestGetUserBalance() {
 		userIdStr := "1"
 		userId := uint(1)
 		balance := uint(1000)
-		suite.managerMock.EXPECT().GetUserBalance(userId).Return(balance, nil).Times(1)
+		suite.managerMock.EXPECT().GetUserBalance(gomock.Any(), userId).Return(balance, nil).Times(1)
 
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest("GET", "/users/"+userIdStr+"/balance", nil)

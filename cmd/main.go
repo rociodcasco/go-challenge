@@ -11,11 +11,15 @@ import (
 	"go-challenge/pkg/user"
 	"os"
 
+	"log/slog"
+
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 func main() {
+	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
+
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable", os.Getenv("DB_HOST"), os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_NAME"), os.Getenv("DB_PORT"))
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	failOnError(err)
@@ -28,17 +32,17 @@ func main() {
 	failOnError(err)
 
 
-	userHandler, err := userHandler.NewUserHandler(userManager)
+	userHandler, err := userHandler.NewUserHandler(userManager, logger)
 	failOnError(err)
 
 	trasferManager, err := transfer.NewTransferManager(storage)
 	failOnError(err)
 
-	transferHandler, err := transferHandler.NewTransferHandler(trasferManager)
+	transferHandler, err := transferHandler.NewTransferHandler(trasferManager, logger)
 	failOnError(err)
 
 	// Initialize the transfer expirer
-	transferExpirer, err := transferexpirer.NewTransferExpirer(trasferManager)
+	transferExpirer, err := transferexpirer.NewTransferExpirer(trasferManager, logger)
 	failOnError(err)
 	transferExpirer.Start()
 	

@@ -1,6 +1,7 @@
 package transfer
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -8,14 +9,14 @@ import (
 )
 
 type Storage interface {
-	CreateTransfer(transfer *Transfer) (uint, error)
-	GetTransferByID(id uint) (*Transfer, error)
-	UpdateTransfer(transfer *Transfer) error
-	GetAllPendingTransfers() ([]Transfer, error)
+	CreateTransfer(ctx context.Context, transfer *Transfer) (uint, error)
+	GetTransferByID(ctx context.Context, id uint) (*Transfer, error)
+	UpdateTransfer(ctx context.Context, transfer *Transfer) error
+	GetAllPendingTransfers(ctx context.Context) ([]Transfer, error)
 
-	GetUserByID(id uint) (*user.User, error)
+	GetUserByID(ctx context.Context, id uint) (*user.User, error)
 
-	UpdateBalances(fromUserID, toUserID uint, amount uint) error
+	UpdateBalances(ctx context.Context, fromUserID, toUserID uint, amount uint) error
 }
 
 type TransferManager struct {
@@ -29,7 +30,7 @@ func NewTransferManager(s Storage) (*TransferManager, error) {
 	return &TransferManager{storage: s}, nil
 }
 
-func (m *TransferManager) CreateTransfer(transfer *Transfer) (uint, error) {
+func (m *TransferManager) CreateTransfer(ctx context.Context, transfer *Transfer) (uint, error) {
 	if transfer == nil {
 		return 0, fmt.Errorf("transfer cannot be nil")
 	}
@@ -43,7 +44,7 @@ func (m *TransferManager) CreateTransfer(transfer *Transfer) (uint, error) {
 
 	transfer.Status = Pending
 	transfer.TransferDate = time.Now()
-	id, err := m.storage.CreateTransfer(transfer)
+	id, err := m.storage.CreateTransfer(ctx, transfer)
 	if err != nil {
 		return 0, fmt.Errorf("failed to create transfer: %w", err)
 	}
@@ -51,8 +52,8 @@ func (m *TransferManager) CreateTransfer(transfer *Transfer) (uint, error) {
 	return id, nil
 }
 
-func (m *TransferManager) FinishTransfer(id uint, status Status) error {
-	transfer, err := m.storage.GetTransferByID(id)
+func (m *TransferManager) FinishTransfer(ctx context.Context, id uint, status Status) error {
+	transfer, err := m.storage.GetTransferByID(ctx, id)
 	if err != nil {
 		return fmt.Errorf("transfer not found: %w", err)
 	}
@@ -61,14 +62,14 @@ func (m *TransferManager) FinishTransfer(id uint, status Status) error {
 	}
 
 	if status == Completed {
-		err = m.storage.UpdateBalances(transfer.FromUserID, transfer.ToUserID, transfer.Amount)
+		err = m.storage.UpdateBalances(ctx, transfer.FromUserID, transfer.ToUserID, transfer.Amount)
 		if err != nil {
 			return fmt.Errorf("failed to update balances: %w", err)
 		}
 	}
 
 	transfer.Status = status
-	err = m.storage.UpdateTransfer(transfer)
+	err = m.storage.UpdateTransfer(ctx, transfer)
 	if err != nil {
 		return fmt.Errorf("failed to update transfer: %w", err)
 	}
@@ -76,16 +77,16 @@ func (m *TransferManager) FinishTransfer(id uint, status Status) error {
 	return nil
 }
 
-func (m *TransferManager) GetTransferByID(id uint) (*Transfer, error) {
-	transfer, err := m.storage.GetTransferByID(id)
+func (m *TransferManager) GetTransferByID(ctx context.Context, id uint) (*Transfer, error) {
+	transfer, err := m.storage.GetTransferByID(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("transfer not found: %w", err)
 	}
 	return transfer, nil
 }
 
-func (m *TransferManager) ExpireTransfer(id uint) error {
-	transfer, err := m.storage.GetTransferByID(id)
+func (m *TransferManager) ExpireTransfer(ctx context.Context, id uint) error {
+	transfer, err := m.storage.GetTransferByID(ctx, id)
 	if err != nil {
 		return fmt.Errorf("transfer not found: %w", err)
 	}
@@ -94,7 +95,7 @@ func (m *TransferManager) ExpireTransfer(id uint) error {
 	}
 
 	transfer.Status = Failed
-	err = m.storage.UpdateTransfer(transfer)
+	err = m.storage.UpdateTransfer(ctx, transfer)
 	if err != nil {
 		return fmt.Errorf("failed to update transfer: %w", err)
 	}
@@ -102,8 +103,8 @@ func (m *TransferManager) ExpireTransfer(id uint) error {
 	return nil
 }
 
-func (m *TransferManager) GetAllPendingTransfers() ([]Transfer, error) {
-	transfers, err := m.storage.GetAllPendingTransfers()
+func (m *TransferManager) GetAllPendingTransfers(ctx context.Context) ([]Transfer, error) {
+	transfers, err := m.storage.GetAllPendingTransfers(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get pending transfers: %w", err)
 	}

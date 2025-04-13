@@ -1,12 +1,13 @@
 package user
 
 import (
+	"context"
 	"fmt"
 )
 
 type Storage interface{
-	CreateUser(user *User) (uint,error)
-	GetUserByID(id uint) (*User, error)
+	CreateUser(ctx context.Context, user *User) (uint,error)
+	GetUserByID(ctx context.Context, id uint) (*User, error)
 }
 
 type UserManager struct{
@@ -20,21 +21,21 @@ func NewUserManager(s Storage) (*UserManager, error) {
 	return &UserManager{storage: s}, nil
 }
 
-func (m *UserManager) CreateUser(user *User) (uint, error) {
+func (m *UserManager) CreateUser(ctx context.Context, user *User) (uint, error) {
 	if user == nil {
 		return 0, fmt.Errorf("user cannot be nil")
 	}
 	
 	user.Balance = 0.0 // default balance
-	id, err := m.storage.CreateUser(user)
+	id, err := m.storage.CreateUser(ctx, user)
 	if err != nil {	
 		return 0, fmt.Errorf("failed to create user: %w", err)
 	}
 	return id, nil
 }
 
-func (m *UserManager) GetUserBalance(id uint) (uint, error) {
-	user, err := m.storage.GetUserByID(id)
+func (m *UserManager) GetUserBalance(ctx context.Context, id uint) (uint, error) {
+	user, err := m.storage.GetUserByID(ctx, id)
 	if err != nil {
 		return 0, fmt.Errorf("user not found: %w", err)
 	}

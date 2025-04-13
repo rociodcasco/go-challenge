@@ -8,6 +8,7 @@ import (
 	userHandler "go-challenge/internal/handler/user"
 	"go-challenge/internal/router"
 	"go-challenge/pkg/transfer"
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -27,14 +28,15 @@ type TransferHandlerTestSuite struct {
 	ctrl *gomock.Controller
 	transferManagerMock *transfer_mocks.MockTransferManager
 	transferHandler *transferHandler.TransferHandler
+	logger *slog.Logger
 	router *gin.Engine
 }
 
 func (suite *TransferHandlerTestSuite) SetupTest() {
 	suite.ctrl = gomock.NewController(suite.T())
 	suite.transferManagerMock = transfer_mocks.NewMockTransferManager(suite.ctrl)
-
-	handler, err := transferHandler.NewTransferHandler(suite.transferManagerMock)
+	suite.logger = slog.Default()
+	handler, err := transferHandler.NewTransferHandler(suite.transferManagerMock, suite.logger)
 	suite.NoError(err, "Failed to create transfer handler")
 	suite.transferHandler = handler
 
@@ -51,13 +53,17 @@ func TestTransferHandlerTestSuite(t *testing.T) {
 
 func (suite *TransferHandlerTestSuite) TestNewTransferHandler() {
 	suite.Run("nil transfer manager", func() {
-		handler, err := transferHandler.NewTransferHandler(nil)
+		handler, err := transferHandler.NewTransferHandler(nil, suite.logger)
 		suite.Nil(handler, "Expected nil handler")
 		suite.Error(err, "Expected error when transfer manager is nil")
 	})
-
+	suite.Run("nil logger", func() {
+		handler, err := transferHandler.NewTransferHandler(suite.transferManagerMock, nil)
+		suite.Nil(handler, "Expected nil handler")
+		suite.Error(err, "Expected error when logger is nil")
+	})
 	suite.Run("valid transfer manager", func() {
-		handler, err := transferHandler.NewTransferHandler(suite.transferManagerMock)
+		handler, err := transferHandler.NewTransferHandler(suite.transferManagerMock, suite.logger)
 		suite.NotNil(handler, "Expected non-nil handler")
 		suite.NoError(err, "Expected no error when transfer manager is valid")
 	})
@@ -86,7 +92,7 @@ func (suite *TransferHandlerTestSuite) TestCreateTransfer() {
 		transferJson, _ := json.Marshal(expectedTransfer)
 		w := httptest.NewRecorder()
 	
-		suite.transferManagerMock.EXPECT().CreateTransfer(expectedTransfer).Return(uint(1), nil).Times(1)
+		suite.transferManagerMock.EXPECT().CreateTransfer(gomock.Any(), expectedTransfer).Return(uint(1), nil).Times(1)
 	
 		req, _ := http.NewRequest("POST", "/transfers/", strings.NewReader(string(transferJson)))
 		suite.router.ServeHTTP(w, req)
@@ -122,7 +128,7 @@ func (suite *TransferHandlerTestSuite) TestFinishTransfer() {
 		transferJson, _ := json.Marshal(expectedTransfer)
 		w := httptest.NewRecorder()
 	
-		suite.transferManagerMock.EXPECT().FinishTransfer(expectedTransfer.ID, expectedTransfer.Status).Return(nil).Times(1)
+		suite.transferManagerMock.EXPECT().FinishTransfer(gomock.Any(), expectedTransfer.ID, expectedTransfer.Status).Return(nil).Times(1)
 	
 		req, _ := http.NewRequest("POST", "/transfers/finish", strings.NewReader(string(transferJson)))
 		suite.router.ServeHTTP(w, req)
@@ -145,11 +151,10 @@ func (suite *TransferHandlerTestSuite) TestGetTransferByID() {
 		Status: transfer.Pending,
 	}
 	expectedTransfer.ID = uint(1)
-	
 	suite.Run("transfer not found", func() {
 		w := httptest.NewRecorder()
 		errExpected := fmt.Errorf("transfer not found")
-		suite.transferManagerMock.EXPECT().GetTransferByID(uint(1)).Return(nil, errExpected)
+		suite.transferManagerMock.EXPECT().GetTransferByID(gomock.Any(), uint(1)).Return(nil, errExpected)
 
 		req, _ := http.NewRequest("GET", "/transfers/1", nil)
 		suite.router.ServeHTTP(w, req)
@@ -169,7 +174,7 @@ func (suite *TransferHandlerTestSuite) TestGetTransferByID() {
 	
 		w := httptest.NewRecorder()
 	
-		suite.transferManagerMock.EXPECT().GetTransferByID(uint(1)).Return(expectedTransfer, nil)
+		suite.transferManagerMock.EXPECT().GetTransferByID(gomock.Any(), uint(1)).Return(expectedTransfer, nil)
 	
 		req, _ := http.NewRequest("GET", "/transfers/1", nil)
 		suite.router.ServeHTTP(w, req)

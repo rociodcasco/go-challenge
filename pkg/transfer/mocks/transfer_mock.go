@@ -5,6 +5,7 @@
 package transfer_mocks
 
 import (
+	context "context"
 	transfer "go-challenge/pkg/transfer"
 	user "go-challenge/pkg/user"
 	reflect "reflect"
@@ -36,74 +37,89 @@ func (m *MockStorage) EXPECT() *MockStorageMockRecorder {
 }
 
 // CreateTransfer mocks base method.
-func (m *MockStorage) CreateTransfer(transfer *transfer.Transfer) (uint, error) {
+func (m *MockStorage) CreateTransfer(ctx context.Context, transfer *transfer.Transfer) (uint, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateTransfer", transfer)
+	ret := m.ctrl.Call(m, "CreateTransfer", ctx, transfer)
 	ret0, _ := ret[0].(uint)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // CreateTransfer indicates an expected call of CreateTransfer.
-func (mr *MockStorageMockRecorder) CreateTransfer(transfer interface{}) *gomock.Call {
+func (mr *MockStorageMockRecorder) CreateTransfer(ctx, transfer interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateTransfer", reflect.TypeOf((*MockStorage)(nil).CreateTransfer), transfer)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateTransfer", reflect.TypeOf((*MockStorage)(nil).CreateTransfer), ctx, transfer)
+}
+
+// GetAllPendingTransfers mocks base method.
+func (m *MockStorage) GetAllPendingTransfers(ctx context.Context) ([]transfer.Transfer, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAllPendingTransfers", ctx)
+	ret0, _ := ret[0].([]transfer.Transfer)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetAllPendingTransfers indicates an expected call of GetAllPendingTransfers.
+func (mr *MockStorageMockRecorder) GetAllPendingTransfers(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllPendingTransfers", reflect.TypeOf((*MockStorage)(nil).GetAllPendingTransfers), ctx)
 }
 
 // GetTransferByID mocks base method.
-func (m *MockStorage) GetTransferByID(id uint) (*transfer.Transfer, error) {
+func (m *MockStorage) GetTransferByID(ctx context.Context, id uint) (*transfer.Transfer, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetTransferByID", id)
+	ret := m.ctrl.Call(m, "GetTransferByID", ctx, id)
 	ret0, _ := ret[0].(*transfer.Transfer)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetTransferByID indicates an expected call of GetTransferByID.
-func (mr *MockStorageMockRecorder) GetTransferByID(id interface{}) *gomock.Call {
+func (mr *MockStorageMockRecorder) GetTransferByID(ctx, id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTransferByID", reflect.TypeOf((*MockStorage)(nil).GetTransferByID), id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTransferByID", reflect.TypeOf((*MockStorage)(nil).GetTransferByID), ctx, id)
 }
 
 // GetUserByID mocks base method.
-func (m *MockStorage) GetUserByID(id uint) (*user.User, error) {
+func (m *MockStorage) GetUserByID(ctx context.Context, id uint) (*user.User, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetUserByID", id)
+	ret := m.ctrl.Call(m, "GetUserByID", ctx, id)
 	ret0, _ := ret[0].(*user.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetUserByID indicates an expected call of GetUserByID.
-func (mr *MockStorageMockRecorder) GetUserByID(id interface{}) *gomock.Call {
+func (mr *MockStorageMockRecorder) GetUserByID(ctx, id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByID", reflect.TypeOf((*MockStorage)(nil).GetUserByID), id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByID", reflect.TypeOf((*MockStorage)(nil).GetUserByID), ctx, id)
 }
 
 // UpdateBalances mocks base method.
-func (m *MockStorage) UpdateBalances(fromUserID, toUserID, amount uint) error {
+func (m *MockStorage) UpdateBalances(ctx context.Context, fromUserID, toUserID, amount uint) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateBalances", fromUserID, toUserID, amount)
+	ret := m.ctrl.Call(m, "UpdateBalances", ctx, fromUserID, toUserID, amount)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // UpdateBalances indicates an expected call of UpdateBalances.
-func (mr *MockStorageMockRecorder) UpdateBalances(fromUserID, toUserID, amount interface{}) *gomock.Call {
+func (mr *MockStorageMockRecorder) UpdateBalances(ctx, fromUserID, toUserID, amount interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateBalances", reflect.TypeOf((*MockStorage)(nil).UpdateBalances), fromUserID, toUserID, amount)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateBalances", reflect.TypeOf((*MockStorage)(nil).UpdateBalances), ctx, fromUserID, toUserID, amount)
 }
 
 // UpdateTransfer mocks base method.
-func (m *MockStorage) UpdateTransfer(transfer *transfer.Transfer) error {
+func (m *MockStorage) UpdateTransfer(ctx context.Context, transfer *transfer.Transfer) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateTransfer", transfer)
+	ret := m.ctrl.Call(m, "UpdateTransfer", ctx, transfer)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // UpdateTransfer indicates an expected call of UpdateTransfer.
-func (mr *MockStorageMockRecorder) UpdateTransfer(transfer interface{}) *gomock.Call {
+func (mr *MockStorageMockRecorder) UpdateTransfer(ctx, transfer interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateTransfer", reflect.TypeOf((*MockStorage)(nil).UpdateTransfer), transfer)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateTransfer", reflect.TypeOf((*MockStorage)(nil).UpdateTransfer), ctx, transfer)
 }

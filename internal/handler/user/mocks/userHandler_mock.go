@@ -5,6 +5,7 @@
 package userHandler_mock
 
 import (
+	context "context"
 	user "go-challenge/pkg/user"
 	reflect "reflect"
 
@@ -35,31 +36,31 @@ func (m *MockUserManager) EXPECT() *MockUserManagerMockRecorder {
 }
 
 // CreateUser mocks base method.
-func (m *MockUserManager) CreateUser(user *user.User) (uint, error) {
+func (m *MockUserManager) CreateUser(ctx context.Context, user *user.User) (uint, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateUser", user)
+	ret := m.ctrl.Call(m, "CreateUser", ctx, user)
 	ret0, _ := ret[0].(uint)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // CreateUser indicates an expected call of CreateUser.
-func (mr *MockUserManagerMockRecorder) CreateUser(user interface{}) *gomock.Call {
+func (mr *MockUserManagerMockRecorder) CreateUser(ctx, user interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateUser", reflect.TypeOf((*MockUserManager)(nil).CreateUser), user)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateUser", reflect.TypeOf((*MockUserManager)(nil).CreateUser), ctx, user)
 }
 
 // GetUserBalance mocks base method.
-func (m *MockUserManager) GetUserBalance(id uint) (uint, error) {
+func (m *MockUserManager) GetUserBalance(ctx context.Context, id uint) (uint, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetUserBalance", id)
+	ret := m.ctrl.Call(m, "GetUserBalance", ctx, id)
 	ret0, _ := ret[0].(uint)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetUserBalance indicates an expected call of GetUserBalance.
-func (mr *MockUserManagerMockRecorder) GetUserBalance(id interface{}) *gomock.Call {
+func (mr *MockUserManagerMockRecorder) GetUserBalance(ctx, id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserBalance", reflect.TypeOf((*MockUserManager)(nil).GetUserBalance), id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserBalance", reflect.TypeOf((*MockUserManager)(nil).GetUserBalance), ctx, id)
 }

@@ -1,6 +1,7 @@
 package user_test
 
 import (
+	"context"
 	"fmt"
 	"go-challenge/pkg/user"
 	"testing"
@@ -52,8 +53,9 @@ func (suite *UserTestSuite) TestNewManager() {
 }
 
 func (suite *UserTestSuite) TestCreateUser() {
+	ctx := context.Background()
 	suite.Run("nil user", func() {
-		id, err := suite.userManager.CreateUser(nil)
+		id, err := suite.userManager.CreateUser(ctx, nil)
 		suite.Equal(uint(0), id, "Expected id to be 0")
 		suite.Error(err, "Expected error when user is nil")
 	})
@@ -65,21 +67,22 @@ func (suite *UserTestSuite) TestCreateUser() {
 			DNI: "12345678",
 			Email: "jdoe@gmail.com",
 		}
-		suite.storageMock.EXPECT().CreateUser(user).Return(expectedID, nil)
+		suite.storageMock.EXPECT().CreateUser(ctx,user).Return(expectedID, nil)
 
-		id, err := suite.userManager.CreateUser(user)
+		id, err := suite.userManager.CreateUser(ctx,user)
 		suite.Equal(expectedID, id, "Expected id to be 1")
 		suite.NoError(err, "Expected no error when creating user")
 	})
 }
 
 func (suite *UserTestSuite) TestGetUserBalance() {
+	ctx := context.Background()
 	suite.Run("user not found", func() {
 		userID := uint(1)
 		errExpected := fmt.Errorf("user not found")
-		suite.storageMock.EXPECT().GetUserByID(userID).Return(nil, errExpected)
+		suite.storageMock.EXPECT().GetUserByID(ctx,userID).Return(nil, errExpected)
 
-		balance, err := suite.userManager.GetUserBalance(userID)
+		balance, err := suite.userManager.GetUserBalance(ctx,userID)
 		suite.Equal(uint(0), balance, "Expected balance to be 0")
 		suite.Error(err, "Expected error when user is not found")
 		suite.Equal(err.Error(), fmt.Errorf("user not found: %w", errExpected).Error(), "Expected error to match")
@@ -91,9 +94,9 @@ func (suite *UserTestSuite) TestGetUserBalance() {
 		user := &user.User{
 			Balance: expectedBalance,
 		}
-		suite.storageMock.EXPECT().GetUserByID(userID).Return(user, nil)
+		suite.storageMock.EXPECT().GetUserByID(ctx,userID).Return(user, nil)
 
-		balance, err := suite.userManager.GetUserBalance(userID)
+		balance, err := suite.userManager.GetUserBalance(ctx,userID)
 		suite.Equal(expectedBalance, balance, "Expected balance to be 1000")
 		suite.NoError(err, "Expected no error when getting user balance")
 	})
