@@ -17,7 +17,7 @@ type TransferManager interface {
 }
 
 type TransferHandler struct {
-	logger *slog.Logger
+	logger          *slog.Logger
 	transferManager TransferManager
 }
 
@@ -30,7 +30,7 @@ func NewTransferHandler(transferManager TransferManager, logger *slog.Logger) (*
 	}
 	return &TransferHandler{
 		transferManager: transferManager,
-		logger: logger,
+		logger:          logger,
 	}, nil
 }
 
@@ -51,7 +51,7 @@ func (h *TransferHandler) CreateTransfer(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{
-		"message": "transfer created",
+		"message":     "transfer created",
 		"transfer_id": id,
 	})
 }

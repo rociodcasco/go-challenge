@@ -22,14 +22,13 @@ import (
 
 //go:generate mockgen -package userHandler_mock -source=handler.go -destination=./mocks/userHandler_mock.go
 
-
 type UserHandlerTestSuite struct {
 	suite.Suite
-	ctrl *gomock.Controller
+	ctrl        *gomock.Controller
 	managerMock *userHandler_mock.MockUserManager
-	handler *userHandler.UserHandler
-	logger *slog.Logger
-	router *gin.Engine
+	handler     *userHandler.UserHandler
+	logger      *slog.Logger
+	router      *gin.Engine
 }
 
 func (suite *UserHandlerTestSuite) SetupTest() {
@@ -81,8 +80,8 @@ func (suite *UserHandlerTestSuite) TestCreateUser() {
 	})
 	suite.Run("valid user", func() {
 		user := &user.User{
-			Name: "John Doe",
-			DNI: "12345678",
+			Name:  "John Doe",
+			DNI:   "12345678",
 			Email: "jdoe@gmail.com",
 		}
 		suite.managerMock.EXPECT().CreateUser(gomock.Any(), user).Return(uint(1), nil).Times(1)

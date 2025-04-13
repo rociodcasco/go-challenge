@@ -16,7 +16,7 @@ type UserInformer interface {
 
 type MetricsManager struct {
 	transferInformer TransferInformer
-	userInformer    UserInformer
+	userInformer     UserInformer
 }
 
 func NewMetricsManager(transferInformer TransferInformer, userInformer UserInformer) (*MetricsManager, error) {
@@ -25,7 +25,7 @@ func NewMetricsManager(transferInformer TransferInformer, userInformer UserInfor
 	}
 	return &MetricsManager{
 		transferInformer: transferInformer,
-		userInformer:    userInformer,
+		userInformer:     userInformer,
 	}, nil
 }
 
@@ -47,4 +47,3 @@ func (m *MetricsManager) GetMetrics(c *gin.Context) {
 		"users":     userCount,
 	})
 }
-

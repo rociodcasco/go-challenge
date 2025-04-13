@@ -14,7 +14,7 @@ type TransferManager interface {
 }
 
 type TransferExpirer struct {
-	logger *slog.Logger
+	logger          *slog.Logger
 	transferManager TransferManager
 }
 
@@ -24,7 +24,7 @@ func NewTransferExpirer(tm TransferManager, logger *slog.Logger) (*TransferExpir
 	}
 	return &TransferExpirer{
 		transferManager: tm,
-		logger: logger,
+		logger:          logger,
 	}, nil
 }
 
@@ -36,20 +36,19 @@ func (te *TransferExpirer) Start() chan struct{} {
 
 	go func() {
 		for {
-		select {
-			case <- ticker.C:
+			select {
+			case <-ticker.C:
 				te.logger.InfoContext(ctx, "Expiring transfers...")
 				te.ExpireTransfers(ctx)
-			case <- quit:
+			case <-quit:
 				te.logger.InfoContext(ctx, "Stopping transfer expirer...")
 				ticker.Stop()
 				return
 			}
 		}
- 	}()
+	}()
 	return quit
 }
-
 
 func (te *TransferExpirer) ExpireTransfers(ctx context.Context) {
 	pendingTransfers, err := te.transferManager.GetAllPendingTransfers(ctx)
@@ -58,7 +57,7 @@ func (te *TransferExpirer) ExpireTransfers(ctx context.Context) {
 	}
 
 	te.logger.InfoContext(ctx, "Found pending transfers", "count", len(pendingTransfers))
-	
+
 	for _, transfer := range pendingTransfers {
 		if time.Since(transfer.TransferDate) > 1*time.Minute {
 			err := te.transferManager.ExpireTransfer(ctx, transfer.ID)

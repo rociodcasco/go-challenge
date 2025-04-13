@@ -25,8 +25,8 @@ func SetupRouter(userHandler UserHandler, transferHandler TransferHandler, metri
 	r := gin.Default()
 
 	auth := gin.BasicAuth(gin.Accounts{
-		"rocio":  "casco", 
-		"pepe": "123",
+		"rocio": "casco",
+		"pepe":  "123",
 	})
 
 	// Ping test
@@ -38,11 +38,11 @@ func SetupRouter(userHandler UserHandler, transferHandler TransferHandler, metri
 
 	users := r.Group("/users")
 	users.POST("/", userHandler.CreateUser)
-	users.GET("/:id/balance",auth, userHandler.GetUserBalance)
+	users.GET("/:id/balance", auth, userHandler.GetUserBalance)
 
 	transfers := r.Group("/transfers")
 	transfers.POST("/", auth, transferHandler.CreateTransfer)
-	transfers.POST("/finish",auth, transferHandler.FinishTransfer)
+	transfers.POST("/finish", auth, transferHandler.FinishTransfer)
 	transfers.GET("/:id", transferHandler.GetTransferByID)
 
 	return r

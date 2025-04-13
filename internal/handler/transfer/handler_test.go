@@ -23,14 +23,13 @@ import (
 
 //go:generate mockgen -package transferHandler_mock -source=handler.go -destination=./mocks/transferHandler_mock.go
 
-
 type TransferHandlerTestSuite struct {
 	suite.Suite
-	ctrl *gomock.Controller
+	ctrl                *gomock.Controller
 	transferManagerMock *transfer_mocks.MockTransferManager
-	transferHandler *transferHandler.TransferHandler
-	logger *slog.Logger
-	router *gin.Engine
+	transferHandler     *transferHandler.TransferHandler
+	logger              *slog.Logger
+	router              *gin.Engine
 }
 
 func (suite *TransferHandlerTestSuite) SetupTest() {
@@ -89,15 +88,15 @@ func (suite *TransferHandlerTestSuite) TestCreateTransfer() {
 			"message":     "transfer created",
 			"transfer_id": uint(1),
 		}
-	
+
 		transferJson, _ := json.Marshal(expectedTransfer)
 		w := httptest.NewRecorder()
-	
+
 		suite.transferManagerMock.EXPECT().CreateTransfer(gomock.Any(), expectedTransfer).Return(uint(1), nil).Times(1)
-	
+
 		req, _ := http.NewRequest("POST", "/transfers/", strings.NewReader(string(transferJson)))
 		suite.router.ServeHTTP(w, req)
-	
+
 		m := make(map[string]any)
 		err := json.Unmarshal(w.Body.Bytes(), &m)
 		suite.Require().NoError(err, "Failed to unmarshal response body")
@@ -125,15 +124,15 @@ func (suite *TransferHandlerTestSuite) TestFinishTransfer() {
 		expectedResponse := map[string]any{
 			"message": fmt.Sprintf("transfer %d finished with status %s", expectedTransfer.ID, expectedTransfer.Status),
 		}
-	
+
 		transferJson, _ := json.Marshal(expectedTransfer)
 		w := httptest.NewRecorder()
-	
+
 		suite.transferManagerMock.EXPECT().FinishTransfer(gomock.Any(), expectedTransfer.ID, expectedTransfer.Status).Return(nil).Times(1)
-	
+
 		req, _ := http.NewRequest("POST", "/transfers/finish", strings.NewReader(string(transferJson)))
 		suite.router.ServeHTTP(w, req)
-	
+
 		m := make(map[string]any)
 		err := json.Unmarshal(w.Body.Bytes(), &m)
 		suite.Require().NoError(err, "Failed to unmarshal response body")
@@ -145,11 +144,11 @@ func (suite *TransferHandlerTestSuite) TestFinishTransfer() {
 
 func (suite *TransferHandlerTestSuite) TestGetTransferByID() {
 	expectedTransfer := &transfer.Transfer{
-		FromUserID: 1,
-		ToUserID:   2,
-		Amount:     100,
+		FromUserID:  1,
+		ToUserID:    2,
+		Amount:      100,
 		Description: "Test transfer",
-		Status: transfer.Pending,
+		Status:      transfer.Pending,
 	}
 	expectedTransfer.ID = uint(1)
 	suite.Run("transfer not found", func() {
@@ -164,7 +163,7 @@ func (suite *TransferHandlerTestSuite) TestGetTransferByID() {
 	})
 
 	suite.Run("valid transfer", func() {
-	
+
 		expectedResponse := map[string]any{
 			"from_user_id": expectedTransfer.FromUserID,
 			"to_user_id":   expectedTransfer.ToUserID,
@@ -172,23 +171,23 @@ func (suite *TransferHandlerTestSuite) TestGetTransferByID() {
 			"description":  expectedTransfer.Description,
 			"status":       "PENDING",
 		}
-	
+
 		w := httptest.NewRecorder()
-	
+
 		suite.transferManagerMock.EXPECT().GetTransferByID(gomock.Any(), uint(1)).Return(expectedTransfer, nil)
-	
+
 		req, _ := http.NewRequest("GET", "/transfers/1", nil)
 		suite.router.ServeHTTP(w, req)
-	
+
 		m := make(map[string]any)
 		err := json.Unmarshal(w.Body.Bytes(), &m)
 		suite.Require().NoError(err, "Failed to unmarshal response body")
-	
+
 		suite.Equal(200, w.Code, "Expected status code 200")
-		
+
 		m = m["transfer"].(map[string]any)
 		suite.Equal(expectedResponse["from_user_id"], uint(m["from_user_id"].(float64)), "Expected response body to match")
-		suite.Equal(expectedResponse["to_user_id"], uint(m["to_user_id"].(float64)), "Expected response body to match")	
+		suite.Equal(expectedResponse["to_user_id"], uint(m["to_user_id"].(float64)), "Expected response body to match")
 		suite.Equal(expectedResponse["amount"], uint(m["amount"].(float64)), "Expected response body to match")
 		suite.Equal(expectedResponse["description"], m["description"], "Expected response body to match")
 		suite.Equal(expectedResponse["status"], m["status"], "Expected response body to match")

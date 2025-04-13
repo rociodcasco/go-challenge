@@ -28,10 +28,8 @@ func main() {
 	storage, err := storage.SetupStorage(db)
 	failOnError(err)
 
-	
 	userManager, err := user.NewUserManager(storage)
 	failOnError(err)
-
 
 	userHandler, err := userHandler.NewUserHandler(userManager, logger)
 	failOnError(err)
@@ -46,17 +44,17 @@ func main() {
 	transferExpirer, err := transferexpirer.NewTransferExpirer(trasferManager, logger)
 	failOnError(err)
 	transferExpirer.Start()
-	
+
 	metrics, err := metrics.NewMetricsManager(trasferManager, userManager)
 	failOnError(err)
 
 	r := router.SetupRouter(userHandler, transferHandler, metrics)
-	fmt.Println("Server is running on port 8080...")
-	// Listen and Server in 0.0.0.0:8080
+	fmt.Println("Server is running on port 8000...")
+	// Listen and Server in 0.0.0.0:8000
 	r.Run(":8000")
 }
 
-func failOnError(err error){
+func failOnError(err error) {
 	if err != nil {
 		panic(err)
 	}

@@ -14,10 +14,9 @@ import (
 
 //go:generate mockgen -package user_mocks -source=user.go -destination=./mocks/user_mock.go
 
-
 type UserTestSuite struct {
 	suite.Suite
-	ctrl *gomock.Controller
+	ctrl        *gomock.Controller
 	storageMock *user_mocks.MockStorage
 	userManager *user.UserManager
 }
@@ -35,7 +34,7 @@ func (suite *UserTestSuite) TearDownTest() {
 	suite.ctrl.Finish()
 }
 
-func TestUserTestSuite(t *testing.T) {	
+func TestUserTestSuite(t *testing.T) {
 	suite.Run(t, new(UserTestSuite))
 }
 
@@ -63,13 +62,13 @@ func (suite *UserTestSuite) TestCreateUser() {
 	suite.Run("valid user", func() {
 		expectedID := uint(1)
 		user := &user.User{
-			Name: "John Doe",
-			DNI: "12345678",
+			Name:  "John Doe",
+			DNI:   "12345678",
 			Email: "jdoe@gmail.com",
 		}
-		suite.storageMock.EXPECT().CreateUser(ctx,user).Return(expectedID, nil)
+		suite.storageMock.EXPECT().CreateUser(ctx, user).Return(expectedID, nil)
 
-		id, err := suite.userManager.CreateUser(ctx,user)
+		id, err := suite.userManager.CreateUser(ctx, user)
 		suite.Equal(expectedID, id, "Expected id to be 1")
 		suite.NoError(err, "Expected no error when creating user")
 	})
@@ -80,9 +79,9 @@ func (suite *UserTestSuite) TestGetUserBalance() {
 	suite.Run("user not found", func() {
 		userID := uint(1)
 		errExpected := fmt.Errorf("user not found")
-		suite.storageMock.EXPECT().GetUserByID(ctx,userID).Return(nil, errExpected)
+		suite.storageMock.EXPECT().GetUserByID(ctx, userID).Return(nil, errExpected)
 
-		balance, err := suite.userManager.GetUserBalance(ctx,userID)
+		balance, err := suite.userManager.GetUserBalance(ctx, userID)
 		suite.Equal(uint(0), balance, "Expected balance to be 0")
 		suite.Error(err, "Expected error when user is not found")
 		suite.Equal(err.Error(), fmt.Errorf("user not found: %w", errExpected).Error(), "Expected error to match")
@@ -94,9 +93,9 @@ func (suite *UserTestSuite) TestGetUserBalance() {
 		user := &user.User{
 			Balance: expectedBalance,
 		}
-		suite.storageMock.EXPECT().GetUserByID(ctx,userID).Return(user, nil)
+		suite.storageMock.EXPECT().GetUserByID(ctx, userID).Return(user, nil)
 
-		balance, err := suite.userManager.GetUserBalance(ctx,userID)
+		balance, err := suite.userManager.GetUserBalance(ctx, userID)
 		suite.Equal(expectedBalance, balance, "Expected balance to be 1000")
 		suite.NoError(err, "Expected no error when getting user balance")
 	})

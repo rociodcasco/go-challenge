@@ -5,14 +5,14 @@ import (
 	"fmt"
 )
 
-type Storage interface{
-	CreateUser(ctx context.Context, user *User) (uint,error)
+type Storage interface {
+	CreateUser(ctx context.Context, user *User) (uint, error)
 	GetUserByID(ctx context.Context, id uint) (*User, error)
 
 	CountUsers() (int, error)
 }
 
-type UserManager struct{
+type UserManager struct {
 	storage Storage
 }
 
@@ -27,10 +27,10 @@ func (m *UserManager) CreateUser(ctx context.Context, user *User) (uint, error) 
 	if user == nil {
 		return 0, fmt.Errorf("user cannot be nil")
 	}
-	
+
 	user.Balance = 0.0 // default balance
 	id, err := m.storage.CreateUser(ctx, user)
-	if err != nil {	
+	if err != nil {
 		return 0, fmt.Errorf("failed to create user: %w", err)
 	}
 	return id, nil

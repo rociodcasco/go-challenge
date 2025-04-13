@@ -8,18 +8,18 @@ import (
 
 type Status string
 
-const(
-	Pending Status = "PENDING"
+const (
+	Pending   Status = "PENDING"
 	Completed Status = "COMPLETED"
-	Failed Status = "FAILED"
+	Failed    Status = "FAILED"
 )
 
 type Transfer struct {
 	gorm.Model
-	FromUserID uint   `json:"from_user_id"`
-	ToUserID   uint   `json:"to_user_id"`
-	Amount        uint   `json:"amount"`
-	Description   string `json:"description"`
-	TransferDate  time.Time `json:"transfer_date"`
-	Status        Status `json:"status"`
+	FromUserID   uint      `json:"from_user_id"`
+	ToUserID     uint      `json:"to_user_id"`
+	Amount       uint      `json:"amount"`
+	Description  string    `json:"description"`
+	TransferDate time.Time `json:"transfer_date"`
+	Status       Status    `json:"status"`
 }

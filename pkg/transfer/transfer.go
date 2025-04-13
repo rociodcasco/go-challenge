@@ -14,7 +14,7 @@ type Storage interface {
 	UpdateTransfer(ctx context.Context, transfer *Transfer) error
 	GetAllPendingTransfers(ctx context.Context) ([]Transfer, error)
 
-	GetTransfersInformation()(map[string]int, error)
+	GetTransfersInformation() (map[string]int, error)
 
 	GetUserByID(ctx context.Context, id uint) (*user.User, error)
 

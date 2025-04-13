@@ -16,9 +16,9 @@ import (
 
 type TransferTestSuite struct {
 	suite.Suite
-	ctrl *gomock.Controller
+	ctrl        *gomock.Controller
 	storageMock *transfer_mocks.MockStorage
-	manager *transfer.TransferManager
+	manager     *transfer.TransferManager
 }
 
 func (suite *TransferTestSuite) SetupTest() {
@@ -35,7 +35,7 @@ func (suite *TransferTestSuite) TearDownTest() {
 }
 
 func TestTransferTestSuite(t *testing.T) {
-    suite.Run(t, new(TransferTestSuite))
+	suite.Run(t, new(TransferTestSuite))
 }
 
 func (suite *TransferTestSuite) TestNewManager() {
@@ -75,9 +75,9 @@ func (suite *TransferTestSuite) TestCreateTransfer() {
 
 	suite.Run("storage error", func() {
 		transfer := &transfer.Transfer{
-			FromUserID: 1,
-			ToUserID: 2,
-			Amount: 100,
+			FromUserID:  1,
+			ToUserID:    2,
+			Amount:      100,
 			Description: "Test transfer",
 		}
 		errExpected := fmt.Errorf("storage error")
@@ -91,14 +91,14 @@ func (suite *TransferTestSuite) TestCreateTransfer() {
 	suite.Run("valid transfer", func() {
 		expectedID := uint(1)
 		expectedTransfer := &transfer.Transfer{
-			Status: transfer.Pending,
+			Status:       transfer.Pending,
 			TransferDate: time.Now(),
-			FromUserID: 1,
-			ToUserID: 2,
-			Amount: 100,
-			Description: "Test transfer",
+			FromUserID:   1,
+			ToUserID:     2,
+			Amount:       100,
+			Description:  "Test transfer",
 		}
-		
+
 		suite.storageMock.EXPECT().CreateTransfer(ctx, expectedTransfer).Return(expectedID, nil)
 
 		id, err := suite.manager.CreateTransfer(ctx, expectedTransfer)
@@ -142,13 +142,13 @@ func (suite *TransferTestSuite) TestFinishTransfer() {
 		expectedFromUserID := uint(1)
 		expectedToUserID := uint(2)
 		existingTransfer := &transfer.Transfer{
-			FromUserID: expectedFromUserID,
-			ToUserID: expectedToUserID,
-			Amount: 100,
+			FromUserID:  expectedFromUserID,
+			ToUserID:    expectedToUserID,
+			Amount:      100,
 			Description: "Test transfer",
-			Status: transfer.Pending,
+			Status:      transfer.Pending,
 		}
-		
+
 		suite.storageMock.EXPECT().GetTransferByID(ctx, id).Return(existingTransfer, nil)
 
 		suite.storageMock.EXPECT().UpdateBalances(ctx, expectedFromUserID, expectedToUserID, existingTransfer.Amount).Return(nil)
@@ -170,13 +170,13 @@ func (suite *TransferTestSuite) TestFinishTransfer() {
 		expectedFromUserID := uint(1)
 		expectedToUserID := uint(2)
 		existingTransfer := &transfer.Transfer{
-			FromUserID: expectedFromUserID,
-			ToUserID: expectedToUserID,
-			Amount: 100,
+			FromUserID:  expectedFromUserID,
+			ToUserID:    expectedToUserID,
+			Amount:      100,
 			Description: "Test transfer",
-			Status: transfer.Pending,
+			Status:      transfer.Pending,
 		}
-		
+
 		suite.storageMock.EXPECT().GetTransferByID(ctx, id).Return(existingTransfer, nil)
 
 		suite.storageMock.EXPECT().UpdateTransfer(ctx, existingTransfer).DoAndReturn(
@@ -207,8 +207,8 @@ func (suite *TransferTestSuite) TestGetTransferByID() {
 		id := uint(1)
 		expectedTransfer := &transfer.Transfer{
 			FromUserID: 1,
-			ToUserID: 2,
-			Amount: 100,
+			ToUserID:   2,
+			Amount:     100,
 		}
 		suite.storageMock.EXPECT().GetTransferByID(ctx, id).Return(expectedTransfer, nil)
 		transfer, err := suite.manager.GetTransferByID(ctx, id)

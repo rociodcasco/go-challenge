@@ -11,12 +11,12 @@ import (
 )
 
 type UserManager interface {
-	CreateUser(ctx context.Context, user *user.User) (uint,error)
+	CreateUser(ctx context.Context, user *user.User) (uint, error)
 	GetUserBalance(ctx context.Context, id uint) (uint, error)
 }
 
 type UserHandler struct {
-	logger *slog.Logger
+	logger  *slog.Logger
 	manager UserManager
 }
 
@@ -29,7 +29,7 @@ func NewUserHandler(manager UserManager, logger *slog.Logger) (*UserHandler, err
 	}
 	return &UserHandler{
 		manager: manager,
-		logger: logger,
+		logger:  logger,
 	}, nil
 }
 
@@ -52,7 +52,7 @@ func (h *UserHandler) CreateUser(c *gin.Context) {
 
 	c.JSON(200, gin.H{
 		"message": "user created",
-		"user_id":     id,
+		"user_id": id,
 	})
 }
 
@@ -74,7 +74,7 @@ func (h *UserHandler) GetUserBalance(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{
-		"id": id,
+		"id":      id,
 		"balance": balance,
 	})
 }
